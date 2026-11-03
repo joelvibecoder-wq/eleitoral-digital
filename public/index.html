@@ -23,28 +23,56 @@ body.dark-mode footer{color:#a8bad0}
 #themeToggle{background:#123b70;color:white;border:0;border-radius:999px;padding:12px 20px;box-shadow:0 5px 16px #123b7030}
 body.dark-mode #themeToggle{background:#e8f1ff;color:#123b70}
 
+
+.layout{display:grid;grid-template-columns:235px minmax(0,1fr);gap:22px;max-width:1450px;margin:0 auto;align-items:start}
+.sidebar{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 12px;position:sticky;top:82px;margin:24px 0 24px 18px;box-shadow:0 5px 18px #173b6508}
+.sidebar .side-title{font-size:11px;font-weight:800;letter-spacing:1px;color:var(--muted);padding:8px 12px 10px}
+.sidebar nav{display:grid;gap:5px}
+.sidebar a{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;text-decoration:none;color:#36516d;font-weight:650;font-size:14px;transition:background .18s,color .18s,transform .18s}
+.sidebar a:hover{background:#eaf4fc;color:var(--navy);transform:translateX(3px)}
+.sidebar a.active{background:#e6f2fc;color:var(--navy)}
+.sidebar .side-note{margin:16px 8px 4px;padding:12px;border-radius:10px;background:#f2f8fd;color:var(--muted);font-size:12px}
+.layout main{min-width:0;max-width:none;margin:0;padding:26px 18px 26px 0}
+@media(max-width:850px){.layout{grid-template-columns:1fr;gap:0}.sidebar{position:static;margin:14px 14px 0;padding:10px}.sidebar nav{grid-template-columns:repeat(2,minmax(0,1fr))}.sidebar .side-title{padding:5px 8px}.sidebar .side-note{display:none}.layout main{padding:18px 14px}}
 </style>
 </head>
 <body>
 <header><b>✓ Eleitoral Digital</b><span class="tag header-tag">AMBIENTE DE SIMULAÇÃO</span></header>
+<div class="layout">
+<aside class="sidebar" aria-label="Barra lateral de navegação">
+<div class="side-title">MENU PRINCIPAL</div>
+<nav>
+<a class="active" href="#inicio">▦ &nbsp; Visão geral</a>
+<a href="#carteira">▣ &nbsp; Minha carteira</a>
+<a href="#votacao">✓ &nbsp; Votação de teste</a>
+<a href="#apuracao">▤ &nbsp; Apuração</a>
+<a href="#urnas">▥ &nbsp; Urnas</a>
+</nav>
+<div class="side-title">CONTA</div>
+<nav>
+<a href="#cadastro">♙ &nbsp; Meu cadastro</a>
+<a href="#administracao">⚙ &nbsp; Administração</a>
+</nav>
+<div class="side-note">Ambiente demonstrativo<br><b>Dados fictícios</b></div>
+</aside>
 <main>
-<h1>Painel de demonstração</h1><p class="muted">Acompanhe resultados fictícios, escolha um candidato demonstrativo e teste a interface.</p>
+<h1 id="inicio">Painel de demonstração</h1><p class="muted">Acompanhe resultados fictícios, escolha um candidato demonstrativo e teste a interface.</p>
 <div class="warning"><b>Aviso:</b> este projeto é uma simulação educacional. Não é oficial, não se conecta à Justiça Eleitoral e não pode ser usado para eleições reais. Use somente dados inventados.</div>
 <section class="panel">
 <h2>Consultar município</h2><div class="actions"><div class="field"><label for="state">Estado</label><select id="state"><option value="PR">Paraná (PR)</option><option value="SP">São Paulo (SP)</option><option value="SC">Santa Catarina (SC)</option></select></div><div class="field"><label for="city">Município</label><select id="city"><option>Ponta Grossa</option><option>Curitiba</option></select></div><button class="primary" onclick="loadLocation()">Consultar</button></div><div class="muted" id="locationLabel">Dados fictícios de Ponta Grossa — PR</div>
 </section>
-<div class="stats">
+<div class="stats" id="urnas">
 <div class="panel stat">Votos demonstrativos<strong id="total">128</strong></div>
 <div class="panel stat">Urnas fictícias<strong id="urnas">12</strong></div>
 <div class="panel stat">Urnas apuradas<strong id="counted">8</strong></div>
 </div>
 <div class="grid">
-<section class="panel"><h2>Votação de teste</h2><p class="muted">Selecione um candidato fictício. Uma sessão de navegador só pode registrar um voto de demonstração.</p><div id="candidates"></div><button class="green" id="vote" disabled onclick="sendVote()">Confirmar voto de teste</button><p class="muted" id="status">Carregando conexão...</p></section>
-<section class="panel"><h2>Apuração demonstrativa</h2><div id="results"></div><p class="muted">Os números-base são inventados; os votos de teste são somados a eles.</p></section>
-<section class="panel"><h2>Carteira ilustrativa</h2><div class="cardid"><b>ELEITORAL DIGITAL</b><p class="muted" style="color:#d7e8f8">DOCUMENTO FICTÍCIO · SEM VALIDADE OFICIAL</p><h2>Mariana Oliveira Santos</h2><div class="muted" style="color:#d7e8f8">Identificador de teste: ED-000123</div><div class="qr" id="qr"></div></div><p class="muted">QR visual ilustrativo, não valida identidade nem representa documento oficial.</p></section>
+<section class="panel" id="votacao"><h2>Votação de teste</h2><p class="muted">Selecione um candidato fictício. Uma sessão de navegador só pode registrar um voto de demonstração.</p><div id="candidates"></div><button class="green" id="vote" disabled onclick="sendVote()">Confirmar voto de teste</button><p class="muted" id="status">Carregando conexão...</p></section>
+<section class="panel" id="apuracao"><h2>Apuração demonstrativa</h2><div id="results"></div><p class="muted">Os números-base são inventados; os votos de teste são somados a eles.</p></section>
+<section class="panel" id="carteira"><h2>Carteira ilustrativa</h2><div class="cardid"><b>ELEITORAL DIGITAL</b><p class="muted" style="color:#d7e8f8">DOCUMENTO FICTÍCIO · SEM VALIDADE OFICIAL</p><h2>Mariana Oliveira Santos</h2><div class="muted" style="color:#d7e8f8">Identificador de teste: ED-000123</div><div class="qr" id="qr"></div></div><p class="muted">QR visual ilustrativo, não valida identidade nem representa documento oficial.</p></section>
 </div>
 <footer class="muted">Eleitoral Digital · Protótipo v1.4 · Dados inteiramente fictícios</footer><div class="theme-control"><button id="themeToggle" type="button" onclick="toggleTheme()" aria-label="Alternar entre modo claro e escuro">🌙 Ativar modo escuro</button></div>
-</main><div id="toast"></div>
+</main></div><div id="toast"></div>
 <script>
 const base={"Ponta Grossa|PR":[58,43,27,12,8],"Curitiba|PR":[71,52,34,18,11],"São Paulo|SP":[84,63,41,24,16],"Florianópolis|SC":[46,39,22,10,7]};
 const people=[{id:1,name:"Ana Ribeiro",party:"Movimento Cidade Melhor",num:"10"},{id:2,name:"Carlos Mendes",party:"União pela Comunidade",num:"20"},{id:3,name:"Beatriz Lima",party:"Renova Vila",num:"30"}];
