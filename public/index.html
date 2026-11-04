@@ -131,7 +131,16 @@ async function sendVote(){if(!serverReady||hasVoted||!chosen)return;const btn=do
 document.getElementById("state").addEventListener("change",()=>{const s=document.getElementById("state").value;const cities={PR:["Ponta Grossa","Curitiba"],SP:["São Paulo"],SC:["Florianópolis"]};document.getElementById("city").innerHTML=cities[s].map(c=>'<option>'+c+'</option>').join("")});
 const qr=document.getElementById("qr");for(let y=0;y<9;y++)for(let x=0;x<9;x++){const i=document.createElement("i");if((x*y+x+y*3)%3===0||((x<3&&y<3)||(x>5&&y<3)||(x<3&&y>5)))i.style.opacity="1";else i.style.opacity=".08";qr.appendChild(i)}
 
-function applyTheme(theme){
+
+// Cadastro e acesso apenas demonstrativos (armazenamento local no navegador).
+function demoAccount(){try{return JSON.parse(localStorage.getItem("edDemoAccount")||"null")}catch(e){return null}}
+function switchAuth(mode){const signup=mode==="signup";document.getElementById("signupForm").style.display=signup?"grid":"none";document.getElementById("loginForm").style.display=signup?"none":"grid";document.getElementById("signupTab").classList.toggle("selected",signup);document.getElementById("loginTab").classList.toggle("selected",!signup);document.getElementById("authHeading").textContent=signup?"Crie sua conta demonstrativa":"Entre na sua conta demonstrativa"}
+function enterDemo(){document.getElementById("authGate").style.display="none"}
+document.getElementById("signupForm").addEventListener("submit",function(e){e.preventDefault();const email=document.getElementById("signupEmail").value.trim().toLowerCase(),recovery=document.getElementById("recoveryEmail").value.trim().toLowerCase(),pass=document.getElementById("signupPassword").value,confirm=document.getElementById("signupConfirm").value;if(pass!==confirm)return alert("As senhas não conferem.");if(email===recovery)return alert("Use e-mails diferentes para acesso e recuperação.");try{localStorage.setItem("edDemoAccount",JSON.stringify({email,recovery,pass}));localStorage.setItem("edDemoSession","yes")}catch(err){return alert("Não foi possível salvar o cadastro neste navegador.")}enterDemo();toast("Cadastro demonstrativo concluído!")});
+document.getElementById("loginForm").addEventListener("submit",function(e){e.preventDefault();const account=demoAccount(),email=document.getElementById("loginEmail").value.trim().toLowerCase(),pass=document.getElementById("loginPassword").value;if(!account)return alert("Ainda não existe cadastro neste navegador. Crie uma conta demonstrativa.");if(account.email!==email||account.pass!==pass)return alert("E-mail ou senha incorretos.");localStorage.setItem("edDemoSession","yes");enterDemo();toast("Acesso demonstrativo liberado!")});
+function demoRecovery(){const account=demoAccount();if(!account)return alert("Nenhum cadastro demonstrativo foi encontrado.");const email=prompt("Digite o e-mail de recuperação cadastrado:");if(email&&email.trim().toLowerCase()===account.recovery)alert("E-mail reconhecido no protótipo. A recuperação real não está ativada; para testar, crie um novo cadastro.");else if(email)alert("Esse e-mail não corresponde ao cadastro demonstrativo.")}
+try{if(localStorage.getItem("edDemoSession")==="yes")enterDemo()}catch(e){}
+\nfunction applyTheme(theme){
   const dark=theme==="dark";
   document.body.classList.toggle("dark-mode",dark);
   const btn=document.getElementById("themeToggle");
