@@ -70,9 +70,20 @@ body.dark-mode .candidate-details h3{color:#d9eaff}
   .theme-control{padding:16px 8px}
   #themeToggle{width:100%;max-width:300px}
 }
+
+/* Tela inicial de cadastro demonstrativo */
+#authGate{position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#eff9f2,#e4f3e9);display:grid;place-items:center;padding:18px;overflow:auto}
+.auth-card{width:min(100%,460px);background:#fff;border:1px solid #dcebe1;border-radius:20px;padding:24px;box-shadow:0 18px 60px #125b3518}
+.auth-card h1{font-size:24px;margin:0 0 6px}.auth-card p{color:#647b6c;font-size:13px}.auth-tabs{display:flex;gap:8px;margin:16px 0}.auth-tabs button{flex:1}.auth-tabs button.selected{background:#16834a;color:white;border-color:#16834a}
+.auth-form{display:grid;gap:10px}.auth-form label{font-size:12px;font-weight:700;color:#36516d}.auth-form input{width:100%;padding:12px;border:1px solid #dcebe1;border-radius:10px;font:inherit}.auth-form button{margin-top:6px}.auth-foot{font-size:11px!important;background:#f0f8f2;padding:10px;border-radius:10px}
+@media(max-width:480px){.auth-card{padding:18px}.auth-card h1{font-size:21px}}
+/* Área inferior intencionalmente vazia */
+footer{min-height:24px;font-size:0!important;color:transparent!important}
 </style>
 </head>
 <body>
+
+<section id="authGate" aria-label="Cadastro e acesso demonstrativos"><div class="auth-card"><span class="tag">ELEITORAL DIGITAL · TESTE</span><h1 id="authHeading">Crie sua conta demonstrativa</h1><p>Cadastre-se para entrar no painel de simulação. Use somente dados fictícios.</p><div class="auth-tabs"><button id="signupTab" class="selected" type="button" onclick="switchAuth('signup')">Cadastrar</button><button id="loginTab" type="button" onclick="switchAuth('login')">Entrar</button></div><form id="signupForm" class="auth-form"><label for="signupEmail">E-mail de acesso</label><input id="signupEmail" type="email" placeholder="teste@example.com" required><label for="recoveryEmail">E-mail de recuperação</label><input id="recoveryEmail" type="email" placeholder="recuperacao@example.com" required><label for="signupPassword">Senha demonstrativa</label><input id="signupPassword" type="password" minlength="6" placeholder="Mínimo de 6 caracteres" required><label for="signupConfirm">Confirme a senha</label><input id="signupConfirm" type="password" minlength="6" placeholder="Digite a senha novamente" required><button class="primary" type="submit">Criar conta e acessar</button></form><form id="loginForm" class="auth-form" style="display:none"><label for="loginEmail">E-mail de acesso</label><input id="loginEmail" type="email" placeholder="teste@example.com" required><label for="loginPassword">Senha demonstrativa</label><input id="loginPassword" type="password" required><button class="primary" type="submit">Entrar no painel</button><button type="button" onclick="demoRecovery()">Esqueci minha senha</button></form><p class="auth-foot">Demonstração local: não envia e-mails e não é um serviço de autenticação real. Não use senhas verdadeiras ou reutilizadas.</p></div></section>
 <header><b>✓ Eleitoral Digital</b><span class="tag header-tag">AMBIENTE DE SIMULAÇÃO</span></header>
 <div class="layout">
 <aside class="sidebar" aria-label="Barra lateral de navegação">
@@ -140,7 +151,8 @@ document.getElementById("signupForm").addEventListener("submit",function(e){e.pr
 document.getElementById("loginForm").addEventListener("submit",function(e){e.preventDefault();const account=demoAccount(),email=document.getElementById("loginEmail").value.trim().toLowerCase(),pass=document.getElementById("loginPassword").value;if(!account)return alert("Ainda não existe cadastro neste navegador. Crie uma conta demonstrativa.");if(account.email!==email||account.pass!==pass)return alert("E-mail ou senha incorretos.");localStorage.setItem("edDemoSession","yes");enterDemo();toast("Acesso demonstrativo liberado!")});
 function demoRecovery(){const account=demoAccount();if(!account)return alert("Nenhum cadastro demonstrativo foi encontrado.");const email=prompt("Digite o e-mail de recuperação cadastrado:");if(email&&email.trim().toLowerCase()===account.recovery)alert("E-mail reconhecido no protótipo. A recuperação real não está ativada; para testar, crie um novo cadastro.");else if(email)alert("Esse e-mail não corresponde ao cadastro demonstrativo.")}
 try{if(localStorage.getItem("edDemoSession")==="yes")enterDemo()}catch(e){}
-\nfunction applyTheme(theme){
+
+function applyTheme(theme){
   const dark=theme==="dark";
   document.body.classList.toggle("dark-mode",dark);
   const btn=document.getElementById("themeToggle");
