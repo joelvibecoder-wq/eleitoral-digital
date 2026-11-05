@@ -94,6 +94,13 @@ body.dark-mode .auth-foot{background:#172941;color:#a8bad0}
 body.dark-mode .auth-theme-toggle button{background:#1b2d45;color:#d9eaff;border-color:#38516f}
 
 .logout-btn{background:#dc3545;color:#fff;border:0;border-radius:10px;padding:11px 20px;font-weight:700;cursor:pointer}.logout-btn:hover{background:#b02a37}body.dark-mode .logout-btn{background:#b83240}
+/* Efeito 3D restrito somente ao painel de login/cadastro */
+#authGate{--mx:50%;--my:50%;perspective:1000px}
+#authGate::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(460px circle at var(--mx) var(--my),rgba(35,190,105,.14),transparent 70%)}
+#authGate .auth-card{position:relative;z-index:1;transform:rotateX(var(--tiltY,0deg)) rotateY(var(--tiltX,0deg));transform-style:preserve-3d;transition:transform .16s ease-out,box-shadow .2s ease}
+#authGate .auth-card:hover{box-shadow:0 24px 65px rgba(18,91,53,.22)}
+@media(hover:none),(pointer:coarse){#authGate::before{display:none}#authGate .auth-card{transform:none!important}}
+@media(prefers-reduced-motion:reduce){#authGate::before{display:none}#authGate .auth-card{transition:none;transform:none!important}}
 </style>
 </head>
 <body>
@@ -185,6 +192,18 @@ function toggleTheme(){
 }
 try{applyTheme(localStorage.getItem("eleitoralDigitalTheme")||"light")}catch(e){applyTheme("light")}
 
-function navigate(view){const all=["inicio","votacao","apuracao","carteira","urnas","cadastro","administracao","privacidade","termos"];if(!all.includes(view))view="inicio";document.querySelectorAll(".view-page").forEach(p=>p.classList.toggle("active",p.id==="page-"+view));document.querySelectorAll(".sidebar a[data-view]").forEach(a=>a.classList.toggle("active",a.dataset.view===view));history.replaceState(null,"","#"+view);window.scrollTo({top:0,behavior:"smooth"});}document.querySelectorAll(".sidebar a[data-view]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();navigate(a.dataset.view)}));render();init();
+function navigate(view){const all=["inicio","votacao","apuracao","carteira","urnas","cadastro","administracao","privacidade","termos"];if(!all.includes(view))view="inicio";document.querySelectorAll(".view-page").forEach(p=>p.classList.toggle("active",p.id==="page-"+view));document.querySelectorAll(".sidebar a[data-view]").forEach(a=>a.classList.toggle("active",a.dataset.view===view));history.replaceState(null,"","#"+view);window.scrollTo({top:0,behavior:"smooth"});}/* Mouse depth effect only on login/signup overlay */
+(function(){
+ const gate=document.getElementById("authGate");
+ if(!gate||!window.matchMedia("(hover: hover) and (pointer: fine)").matches||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+ const card=gate.querySelector(".auth-card");if(!card)return;
+ gate.addEventListener("pointermove",function(ev){
+  const r=gate.getBoundingClientRect(),x=Math.max(0,Math.min(1,(ev.clientX-r.left)/r.width)),y=Math.max(0,Math.min(1,(ev.clientY-r.top)/r.height));
+  gate.style.setProperty("--mx",(x*100)+"%");gate.style.setProperty("--my",(y*100)+"%");
+  card.style.setProperty("--tiltX",((x-.5)*2.4).toFixed(2)+"deg");card.style.setProperty("--tiltY",((.5-y)*2).toFixed(2)+"deg");
+ });
+ gate.addEventListener("pointerleave",function(){gate.style.setProperty("--mx","50%");gate.style.setProperty("--my","50%");card.style.setProperty("--tiltX","0deg");card.style.setProperty("--tiltY","0deg")});
+})();
+document.querySelectorAll(".sidebar a[data-view]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();navigate(a.dataset.view)}));render();init();
 </script>
 </body></html>
