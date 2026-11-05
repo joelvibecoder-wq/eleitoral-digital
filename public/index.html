@@ -157,7 +157,7 @@ body:not(.dark-mode) .auth-inspiration{color:#176b3b!important;background:rgba(2
 <label for="loginPassword">Senha</label><div class="password-wrap"><input id="loginPassword" type="password" autocomplete="current-password" required><button class="password-eye" type="button" aria-label="Mostrar senha" title="Mostrar senha" onclick="togglePasswordVisibility('loginPassword',this)">◉</button></div>
 <button class="primary" type="submit">Entrar no painel</button><button type="button" onclick="demoRecovery()">Esqueci meu acesso</button>
 </form>
-<p class="auth-foot">Demonstração educacional. Cadastro e senha ficam apenas neste navegador; não use informações reais. A recuperação real por e-mail não está habilitada.</p>
+<p class="auth-foot">Demonstração educacional: não salva nem envia e-mail ou senha. Use dados fictícios. Recuperação por e-mail não está disponível.</p>
 </div></section>
 <header><b>✓ Eleitoral Digital</b><span class="tag header-tag">AMBIENTE DE SIMULAÇÃO</span></header>
 <div class="layout">
@@ -211,37 +211,33 @@ function showCandidateDetails(id){
 function closeCandidateDetails(){document.getElementById("candidateDetails").classList.remove("open")}
 function choose(id){if(hasVoted)return toast("Esta sessão já participou da simulação.");chosen=id;render()}
 async function loadLocation(){const state=document.getElementById("state").value;const city=document.getElementById("city").value;locationKey=city+"|"+state;document.getElementById("locationLabel").textContent="Dados fictícios de "+city+" — "+state;serverVotes=[0,0,0];await refreshResults()}
-async function refreshResults(){if(!serverReady){render();return}const [city,state]=locationKey.split("|");try{const d=await api("/api/results?city="+encodeURIComponent(city)+"&state="+encodeURIComponent(state));serverVotes=d.votes;render()}catch(e){toast(e.message)}}
-async function init(){try{const s=await api("/api/session");hasVoted=s.hasVoted;serverReady=true;document.getElementById("status").textContent=hasVoted?"Voto de teste já registrado nesta sessão.":"Conexão demonstrativa ativa.";await refreshResults()}catch(e){document.getElementById("status").textContent="API ainda não conectada. Publique as Netlify Functions.";render()}}
-async function sendVote(){if(!serverReady||hasVoted||!chosen)return;const btn=document.getElementById("vote");btn.disabled=true;try{const [city,state]=locationKey.split("|");await api("/api/vote",{method:"POST",body:JSON.stringify({candidateId:chosen,city,state})});hasVoted=true;document.getElementById("status").textContent="Voto fictício gravado no servidor.";toast("Voto de teste registrado.");await refreshResults()}catch(e){toast(e.message);if(e.message.includes("já registrou"))hasVoted=true;render()}}
+async function refreshResults(){render()}
+async function init(){serverReady=true;document.getElementById("status").textContent="Modo de simulação local ativo. Nenhuma API conectada.";render()}
+async function sendVote(){if(hasVoted||!chosen)return;serverVotes[chosen-1]++;hasVoted=true;document.getElementById("status").textContent="Voto fictício contabilizado somente nesta sessão do navegador.";toast("Voto de teste registrado localmente.");render()}
 document.getElementById("state").addEventListener("change",()=>{const s=document.getElementById("state").value;const cities={PR:["Ponta Grossa","Curitiba"],SP:["São Paulo"],SC:["Florianópolis"]};document.getElementById("city").innerHTML=cities[s].map(c=>'<option>'+c+'</option>').join("")});
 const qr=document.getElementById("qr");for(let y=0;y<9;y++)for(let x=0;x<9;x++){const i=document.createElement("i");if((x*y+x+y*3)%3===0||((x<3&&y<3)||(x>5&&y<3)||(x<3&&y>5)))i.style.opacity="1";else i.style.opacity=".08";qr.appendChild(i)}
 
 
-// Cadastro e acesso apenas demonstrativos (armazenamento local no navegador).
+// Acesso demonstrativo: não salva nem envia e-mail ou senha.
 function togglePasswordVisibility(inputId,button){const input=document.getElementById(inputId);const show=input.type==="password";input.type=show?"text":"password";button.innerHTML=show?`<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12s3.6-7 9-7c2.1 0 4 .8 5.5 2"/><path d="M21 12s-3.6 7-9 7c-2.1 0-4-.8-5.5-2"/><path d="M2 2l20 20"/></svg>`:`<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>`;button.setAttribute("aria-label",show?"Ocultar senha":"Mostrar senha");button.title=show?"Ocultar senha":"Mostrar senha";button.style.color="#198754"}
-function demoAccount(){try{return JSON.parse(localStorage.getItem("edDemoAccount")||"null")}catch(e){return null}}
-function demoAccounts(){try{return JSON.parse(localStorage.getItem("edDemoAccounts")||"{}")}catch(e){return {}}}
-function currentAccount(){const email=localStorage.getItem("edDemoCurrentEmail");const accounts=demoAccounts();return email&&accounts[email]?accounts[email]:demoAccount()}
-function renderAccountProfile(){const a=currentAccount();const fullName=document.getElementById("profileFullName"),walletName=document.getElementById("walletFullName"),email=document.getElementById("profileEmail"),recovery=document.getElementById("profileRecovery");const name=a?.fullName||"Nome não informado";if(fullName)fullName.textContent=name;if(walletName)walletName.textContent=name;if(email)email.textContent=a?.email||"Nenhuma conta conectada";if(recovery)recovery.textContent=a?.recovery||"—";}
+function currentAccount(){return window.demoCurrentAccount||null}
+function renderAccountProfile(){const a=currentAccount();const fullName=document.getElementById("profileFullName"),walletName=document.getElementById("walletFullName"),email=document.getElementById("profileEmail"),recovery=document.getElementById("profileRecovery");const name=a?.fullName||"Visitante demonstrativo";if(fullName)fullName.textContent=name;if(walletName)walletName.textContent=name;if(email)email.textContent=a?.email||"E-mail não salvo";if(recovery)recovery.textContent="Não armazenado";}
 function switchAuth(mode){const signup=mode==="signup";document.getElementById("signupForm").style.display=signup?"grid":"none";document.getElementById("loginForm").style.display=signup?"none":"grid";document.getElementById("signupTab").classList.toggle("selected",signup);document.getElementById("loginTab").classList.toggle("selected",!signup);document.getElementById("authHeading").textContent=signup?"Crie sua conta demonstrativa":"Entre na sua conta demonstrativa"}
 function enterDemo(){document.getElementById("authGate").style.display="none";renderAccountProfile()}
-function logoutDemo(){localStorage.removeItem("edDemoSession");localStorage.removeItem("edDemoCurrentEmail");location.hash="inicio";navigate("inicio");toast("Painel demonstrativo reiniciado.")}
-function demoRecovery(){const account=demoAccount();if(!account)return alert("Nenhum cadastro demonstrativo foi encontrado.");const email=prompt("Digite o e-mail de recuperação cadastrado:");if(email&&email.trim().toLowerCase()===account.recovery)alert("E-mail reconhecido no protótipo. A recuperação real não está ativada; para testar, crie um novo cadastro.");else if(email)alert("Esse e-mail não corresponde ao cadastro demonstrativo.")}
+function logoutDemo(){window.demoCurrentAccount=null;document.getElementById("signupForm").reset();document.getElementById("loginForm").reset();document.getElementById("authGate").style.display="flex";switchAuth("signup");location.hash="inicio";navigate("inicio");toast("Você saiu da conta demonstrativa.")}
+function demoRecovery(){alert("A recuperação por e-mail não está ativada nesta demonstração. Nenhum e-mail ou senha é salvo.")}
 function normalizedEmail(value){return String(value||"").trim().toLowerCase()}
 function showAuth(){document.getElementById("authGate").style.display="flex";switchAuth("signup")}
-function authSuccess(email){localStorage.setItem("edDemoCurrentEmail",email);localStorage.setItem("edDemoSession","active");document.getElementById("authGate").style.display="none";renderAccountProfile();toast("Acesso demonstrativo liberado.");}
+function authSuccess(email,fullName=""){window.demoCurrentAccount={email,fullName};document.getElementById("authGate").style.display="none";renderAccountProfile();toast("Acesso demonstrativo liberado. Nenhum dado de conta foi salvo.")}
 document.getElementById("signupForm").addEventListener("submit",function(e){
  e.preventDefault();const fullName=document.getElementById("signupFullName").value.trim().replace(/\\s+/g," "),email=normalizedEmail(document.getElementById("signupEmail").value),recovery=normalizedEmail(document.getElementById("signupRecovery").value),password=document.getElementById("signupPassword").value;
  if(password.length<8||password.length>12||!/[A-Za-zÀ-ÿ]/.test(password)||!/[0-9]/.test(password)||!/[^A-Za-zÀ-ÿ0-9]/.test(password)){alert("A senha precisa ter de 8 a 12 caracteres e incluir letras, números e símbolos.");return}
- const accounts=demoAccounts();if(accounts[email]){alert("Este e-mail já possui cadastro. Entre usando a aba Entrar.");switchAuth("login");document.getElementById("loginEmail").value=email;return}
- accounts[email]={fullName,email,recovery,password};localStorage.setItem("edDemoAccounts",JSON.stringify(accounts));localStorage.setItem("edDemoAccount",JSON.stringify(accounts[email]));authSuccess(email);
+ authSuccess(email,fullName);
 });
 document.getElementById("loginForm").addEventListener("submit",function(e){
- e.preventDefault();const email=normalizedEmail(document.getElementById("loginEmail").value),password=document.getElementById("loginPassword").value,accounts=demoAccounts(),account=accounts[email]||(demoAccount()&&normalizedEmail(demoAccount().email)===email?demoAccount():null);
- if(!account||account.password!==password){alert("E-mail ou senha incorretos. Confira os dados ou faça seu cadastro.");return}
- if(!accounts[email]){accounts[email]=account;localStorage.setItem("edDemoAccounts",JSON.stringify(accounts))}
- localStorage.setItem("edDemoAccount",JSON.stringify(account));authSuccess(email);
+ e.preventDefault();const email=normalizedEmail(document.getElementById("loginEmail").value),password=document.getElementById("loginPassword").value;
+ if(!email||!password){alert("Informe um e-mail e uma senha para continuar.");return}
+ authSuccess(email);
 });
 showAuth();
 
