@@ -217,7 +217,18 @@ document.getElementById("signupForm").addEventListener("submit",function(e){
  if(email===recovery)return alert("Informe um e-mail de recuperação diferente do e-mail de acesso.");
  try{
   const accounts=demoAccounts();
-  if(accounts[email]){document.getElementById("loginEmail").value=email;switchAuth("login");alert("Esta conta já está cadastrada neste navegador. Os dados do e-mail foram preenchidos em Entrar; informe sua senha para acessar.");return;}
+  if(accounts[email]){
+   const existing=accounts[email];
+   if(existing.pass===pass){
+    localStorage.setItem("edDemoAccount",JSON.stringify(existing));
+    localStorage.setItem("edDemoCurrentEmail",email);
+    localStorage.setItem("edDemoSession","yes");
+    enterDemo();toast("Conta demonstrativa reconhecida. Acesso liberado!");return;
+   }
+   document.getElementById("loginEmail").value=email;
+   switchAuth("login");
+   alert("Este e-mail já está cadastrado neste navegador. Para entrar, use a senha original da conta na aba Entrar.");return;
+  }
   const account={email:email,recovery:recovery,pass:pass};
   accounts[email]=account;
   localStorage.setItem("edDemoAccounts",JSON.stringify(accounts));
