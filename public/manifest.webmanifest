@@ -1,7 +1,7 @@
 {
   "id": "./",
-  "name": "Eleitoral Digital — Eleição Escolar",
-  "short_name": "Eleitoral Digital",
+  "name": "Eleição Escolar — Eleição Escolar",
+  "short_name": "Eleição Escolar",
   "description": "Protótipo PWA educacional de eleição escolar com candidaturas e dados fictícios.",
   "start_url": "./",
   "scope": "./",
