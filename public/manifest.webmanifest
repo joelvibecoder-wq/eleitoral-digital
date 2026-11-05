@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Eleitoral Digital — Simulação",
+  "name": "Eleitoral Digital — Eleição Escolar",
   "short_name": "Eleitoral Digital",
-  "description": "Sistema educacional de simulação eleitoral com dados fictícios.",
+  "description": "Protótipo PWA educacional de eleição escolar com candidaturas e dados fictícios.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
