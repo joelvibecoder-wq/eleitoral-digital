@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#125b35"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="Eleitoral Digital"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./icon.svg">
 <title>Eleitoral Digital — Simulação</title>
 <style>
 :root{--blue:#16834a;--navy:#125b35;--green:#198754;--bg:#f4faf6;--line:#dcebe1;--muted:#647b6c}
@@ -268,4 +269,5 @@ function navigate(view){const all=["inicio","votacao","apuracao","carteira","urn
 })();
 document.querySelectorAll(".sidebar a[data-view]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();navigate(a.dataset.view)}));render();init();
 </script>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(err=>console.warn("PWA: falha ao registrar service worker",err)));}</script>
 </body></html>
