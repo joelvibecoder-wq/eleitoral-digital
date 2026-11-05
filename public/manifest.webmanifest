@@ -1,0 +1,21 @@
+{
+  "id": "./",
+  "name": "Eleitoral Digital — Simulação",
+  "short_name": "Eleitoral Digital",
+  "description": "Sistema educacional de simulação eleitoral com dados fictícios.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f4faf6",
+  "theme_color": "#125b35",
+  "categories": ["education", "utilities"],
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
