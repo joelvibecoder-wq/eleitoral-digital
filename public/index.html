@@ -139,7 +139,25 @@ body:not(.dark-mode) .auth-inspiration{color:#176b3b!important;background:rgba(2
 </head>
 <body>
 
-<section id="authGate" aria-label="Acesso ao painel" style="display:none"></section>
+<section id="authGate" aria-label="Cadastro e acesso">
+<div class="auth-card">
+<div class="auth-theme-toggle"><button id="authThemeToggle" type="button" onclick="toggleTheme()">🌙 Modo escuro</button></div>
+<h1 id="authHeading">Crie sua conta demonstrativa</h1>
+<p>Cadastre-se para acessar o painel de simulação. Use somente dados fictícios.</p>
+<div class="auth-tabs"><button id="signupTab" class="selected" type="button" onclick="switchAuth('signup')">Cadastrar</button><button id="loginTab" type="button" onclick="switchAuth('login')">Entrar</button></div>
+<form id="signupForm" class="auth-form">
+<label for="signupEmail">E-mail de acesso</label><input id="signupEmail" type="email" autocomplete="email" required placeholder="aluno@exemplo.com">
+<label for="signupRecovery">E-mail de recuperação</label><input id="signupRecovery" type="email" autocomplete="email" required placeholder="recuperacao@exemplo.com">
+<label for="signupPassword">Senha (8 a 12 caracteres, com letras, números e símbolo)</label><div class="password-wrap"><input id="signupPassword" type="password" autocomplete="new-password" minlength="8" maxlength="12" required><button class="password-eye" type="button" aria-label="Mostrar senha" title="Mostrar senha" onclick="togglePasswordVisibility('signupPassword',this)">◉</button></div>
+<button class="primary" type="submit">Criar conta e continuar</button>
+</form>
+<form id="loginForm" class="auth-form" style="display:none">
+<label for="loginEmail">E-mail de acesso</label><input id="loginEmail" type="email" autocomplete="username" required>
+<label for="loginPassword">Senha</label><div class="password-wrap"><input id="loginPassword" type="password" autocomplete="current-password" required><button class="password-eye" type="button" aria-label="Mostrar senha" title="Mostrar senha" onclick="togglePasswordVisibility('loginPassword',this)">◉</button></div>
+<button class="primary" type="submit">Entrar no painel</button><button type="button" onclick="demoRecovery()">Esqueci meu acesso</button>
+</form>
+<p class="auth-foot">Demonstração educacional. Cadastro e senha ficam apenas neste navegador; não use informações reais. A recuperação real por e-mail não está habilitada.</p>
+</div></section>
 <header><b>✓ Eleitoral Digital</b><span class="tag header-tag">AMBIENTE DE SIMULAÇÃO</span></header>
 <div class="layout">
 <aside class="sidebar" aria-label="Barra lateral de navegação">
@@ -209,7 +227,22 @@ function switchAuth(mode){const signup=mode==="signup";document.getElementById("
 function enterDemo(){document.getElementById("authGate").style.display="none";renderAccountProfile()}
 function logoutDemo(){localStorage.removeItem("edDemoSession");localStorage.removeItem("edDemoCurrentEmail");location.hash="inicio";navigate("inicio");toast("Painel demonstrativo reiniciado.")}
 function demoRecovery(){const account=demoAccount();if(!account)return alert("Nenhum cadastro demonstrativo foi encontrado.");const email=prompt("Digite o e-mail de recuperação cadastrado:");if(email&&email.trim().toLowerCase()===account.recovery)alert("E-mail reconhecido no protótipo. A recuperação real não está ativada; para testar, crie um novo cadastro.");else if(email)alert("Esse e-mail não corresponde ao cadastro demonstrativo.")}
-try{localStorage.removeItem("edDemoSession");localStorage.removeItem("edDemoCurrentEmail");enterDemo()}catch(e){enterDemo()}
+function normalizedEmail(value){return String(value||"").trim().toLowerCase()}
+function showAuth(){document.getElementById("authGate").style.display="flex";switchAuth("signup")}
+function authSuccess(email){localStorage.setItem("edDemoCurrentEmail",email);localStorage.setItem("edDemoSession","active");document.getElementById("authGate").style.display="none";renderAccountProfile();toast("Acesso demonstrativo liberado.");}
+document.getElementById("signupForm").addEventListener("submit",function(e){
+ e.preventDefault();const email=normalizedEmail(document.getElementById("signupEmail").value),recovery=normalizedEmail(document.getElementById("signupRecovery").value),password=document.getElementById("signupPassword").value;
+ if(password.length<8||password.length>12||!/[A-Za-zÀ-ÿ]/.test(password)||!/[0-9]/.test(password)||!/[^A-Za-zÀ-ÿ0-9]/.test(password)){alert("A senha precisa ter de 8 a 12 caracteres e incluir letras, números e símbolos.");return}
+ const accounts=demoAccounts();if(accounts[email]){alert("Este e-mail já possui cadastro. Entre usando a aba Entrar.");switchAuth("login");document.getElementById("loginEmail").value=email;return}
+ accounts[email]={email,recovery,password};localStorage.setItem("edDemoAccounts",JSON.stringify(accounts));localStorage.setItem("edDemoAccount",JSON.stringify(accounts[email]));authSuccess(email);
+});
+document.getElementById("loginForm").addEventListener("submit",function(e){
+ e.preventDefault();const email=normalizedEmail(document.getElementById("loginEmail").value),password=document.getElementById("loginPassword").value,accounts=demoAccounts(),account=accounts[email]||(demoAccount()&&normalizedEmail(demoAccount().email)===email?demoAccount():null);
+ if(!account||account.password!==password){alert("E-mail ou senha incorretos. Confira os dados ou faça seu cadastro.");return}
+ if(!accounts[email]){accounts[email]=account;localStorage.setItem("edDemoAccounts",JSON.stringify(accounts))}
+ localStorage.setItem("edDemoAccount",JSON.stringify(account));authSuccess(email);
+});
+showAuth();
 
 function applyTheme(theme){
   const dark=theme==="dark";
