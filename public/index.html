@@ -136,7 +136,7 @@ body:not(.dark-mode) .auth-inspiration{color:#176b3b!important;background:rgba(2
 
 /* A tela inicia visível, mas o JavaScript pode ocultá-la após autenticar. */
 #authGate{display:flex}
-</style>
+\n/* Mobile: ao escolher uma seção no menu, posiciona o conteúdo ativo imediatamente na tela */\n@media(max-width:850px){.view-page.active{scroll-margin-top:10px}.layout main{scroll-margin-top:10px}}\n</style>
 </head>
 <body>
 
@@ -255,7 +255,7 @@ function toggleTheme(){
 }
 try{applyTheme(localStorage.getItem("eleitoralDigitalTheme")||"light")}catch(e){applyTheme("light")}
 
-function navigate(view){const all=["inicio","votacao","apuracao","carteira","urnas","cadastro","administracao","privacidade","termos"];if(!all.includes(view))view="inicio";document.querySelectorAll(".view-page").forEach(p=>p.classList.toggle("active",p.id==="page-"+view));document.querySelectorAll(".sidebar a[data-view]").forEach(a=>a.classList.toggle("active",a.dataset.view===view));history.replaceState(null,"","#"+view);window.scrollTo({top:0,behavior:"smooth"});}/* Mouse depth effect only on login/signup overlay */
+function navigate(view){const all=["inicio","votacao","apuracao","carteira","urnas","cadastro","administracao","privacidade","termos"];if(!all.includes(view))view="inicio";document.querySelectorAll(".view-page").forEach(p=>p.classList.toggle("active",p.id==="page-"+view));document.querySelectorAll(".sidebar a[data-view]").forEach(a=>a.classList.toggle("active",a.dataset.view===view));history.replaceState(null,"","#"+view);const active=document.getElementById("page-"+view);if(active){if(window.matchMedia("(max-width:850px)").matches){active.scrollIntoView({behavior:"auto",block:"start"});}else{window.scrollTo({top:0,behavior:"smooth"});}}}/* Mouse depth effect only on login/signup overlay */
 (function(){
  const gate=document.getElementById("authGate");
  if(!gate||!window.matchMedia("(hover: hover) and (pointer: fine)").matches||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
