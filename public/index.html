@@ -217,7 +217,7 @@ document.getElementById("signupForm").addEventListener("submit",function(e){
  if(email===recovery)return alert("Informe um e-mail de recuperação diferente do e-mail de acesso.");
  try{
   const accounts=demoAccounts();
-  if(accounts[email])return alert("Este e-mail já tem cadastro neste navegador. Vá em Entrar para acessar.");
+  if(accounts[email]){document.getElementById("loginEmail").value=email;switchAuth("login");alert("Esta conta já está cadastrada neste navegador. Os dados do e-mail foram preenchidos em Entrar; informe sua senha para acessar.");return;}
   const account={email:email,recovery:recovery,pass:pass};
   accounts[email]=account;
   localStorage.setItem("edDemoAccounts",JSON.stringify(accounts));
@@ -235,7 +235,8 @@ document.getElementById("loginForm").addEventListener("submit",function(e){
  try{
   const accounts=demoAccounts();
   let account=accounts[email]||null;
-  if(!account){const legacy=demoAccount();if(legacy&&legacy.email===email)account=legacy;}
+  if(!account){const legacy=demoAccount();if(legacy&&String(legacy.email||"").trim().toLowerCase()===email)account=legacy;}
+  if(account){account.email=String(account.email||email).trim().toLowerCase();account.recovery=String(account.recovery||"").trim().toLowerCase();accounts[email]=account;localStorage.setItem("edDemoAccounts",JSON.stringify(accounts));}
   if(!account||account.pass!==pass)return alert("E-mail ou senha incorretos. Confira os dados ou cadastre essa conta neste navegador.");
   localStorage.setItem("edDemoAccount",JSON.stringify(account));
   localStorage.setItem("edDemoCurrentEmail",email);
