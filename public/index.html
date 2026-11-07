@@ -260,4 +260,5 @@ function navigate(view){const all=["inicio","votacao","apuracao","urnas","cadast
 document.querySelectorAll(".sidebar a[data-view]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();navigate(a.dataset.view)}));render();init();
 </script>
 <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(err=>console.warn("PWA: falha ao registrar service worker",err)));}</script>
+<script type="module" src="./firebase-app.js"></script>
 </body></html>
